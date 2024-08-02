@@ -5,7 +5,7 @@
     <artifactId>rest</artifactId>
 
     <parent>
-        <groupId>com.tinqinacademy</groupId>
+        <groupId>com.tinqinacademy.authentication</groupId>
         <artifactId>authentication</artifactId>
         <version>${revision}</version>
     </parent>
@@ -23,7 +23,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.tinqinacademy</groupId>
+            <groupId>com.tinqinacademy.authentication</groupId>
             <artifactId>core</artifactId>
             <version>${revision}</version>
         </dependency>

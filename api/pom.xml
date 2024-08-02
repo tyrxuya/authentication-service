@@ -5,14 +5,14 @@
     <artifactId>api</artifactId>
 
     <parent>
-        <groupId>com.tinqinacademy</groupId>
+        <groupId>com.tinqinacademy.authentication</groupId>
         <artifactId>authentication</artifactId>
         <version>${revision}</version>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>com.tinqinacademy</groupId>
+            <groupId>com.tinqinacademy.authentication</groupId>
             <artifactId>persistence</artifactId>
             <version>${revision}</version>
         </dependency>

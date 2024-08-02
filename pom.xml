@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>com.tinqinacademy</groupId>
+	<groupId>com.tinqinacademy.authentication</groupId>
 	<artifactId>authentication</artifactId>
 	<version>${revision}</version>
 
