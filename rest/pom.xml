@@ -27,6 +27,12 @@
             <artifactId>core</artifactId>
             <version>${revision}</version>
         </dependency>
+
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-client</artifactId>
+            <version>${sbadmin.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
