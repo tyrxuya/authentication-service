@@ -35,6 +35,9 @@
 		<flatten.version>1.6.0</flatten.version>
 		<vavr.version>0.10.4</vavr.version>
 		<sbadmin.version>3.3.3</sbadmin.version>
+		<jwt.version>0.12.6</jwt.version>
+		<dotenv.version>4.0.0</dotenv.version>
+		<startermail.version>3.2.2</startermail.version>
 	</properties>
 
 	<dependencies>
@@ -57,6 +60,18 @@
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>${swagger.version}</version>
+		</dependency>
+
+<!--		tui posle v otdelnite pomove-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>me.paulschwarz</groupId>
+			<artifactId>spring-dotenv</artifactId>
+			<version>${dotenv.version}</version>
 		</dependency>
 	</dependencies>
 
