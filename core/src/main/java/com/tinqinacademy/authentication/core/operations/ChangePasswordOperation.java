@@ -44,7 +44,7 @@ public class ChangePasswordOperation extends BaseOperation implements ChangePass
 
             validate(input);
 
-            User user = findUsernameByEmail(input);
+            User user = findUserByEmail(input);
 
             checkIfOldPasswordMatchesUser(input, user);
 
@@ -73,7 +73,7 @@ public class ChangePasswordOperation extends BaseOperation implements ChangePass
         }
     }
 
-    private User findUsernameByEmail(ChangePasswordInput input) {
+    private User findUserByEmail(ChangePasswordInput input) {
         return userRepository.findByEmail(input.getEmail())
                 .orElseThrow(UserNotFoundException::new);
     }
