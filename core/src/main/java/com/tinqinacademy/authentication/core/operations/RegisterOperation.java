@@ -29,7 +29,11 @@ public class RegisterOperation extends BaseOperation implements Register {
     private final UserRepository userRepository;
     private final SendConfirmation sendConfirmation;
 
-    public RegisterOperation(Validator validator, ConversionService conversionService, ErrorMapper errorMapper, UserRepository userRepository, SendConfirmation sendConfirmation) {
+    public RegisterOperation(Validator validator,
+                             ConversionService conversionService,
+                             ErrorMapper errorMapper,
+                             UserRepository userRepository,
+                             SendConfirmation sendConfirmation) {
         super(validator, conversionService, errorMapper);
         this.userRepository = userRepository;
         this.sendConfirmation = sendConfirmation;

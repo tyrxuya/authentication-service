@@ -36,7 +36,11 @@ public class SendConfirmationOperation extends BaseOperation implements SendConf
     @Value("${sender.email}")
     private String sender;
 
-    public SendConfirmationOperation(Validator validator, ConversionService conversionService, ErrorMapper errorMapper, JavaMailSender mailSender, TemplateEngine templateEngine) {
+    public SendConfirmationOperation(Validator validator,
+                                     ConversionService conversionService,
+                                     ErrorMapper errorMapper,
+                                     JavaMailSender mailSender,
+                                     TemplateEngine templateEngine) {
         super(validator, conversionService, errorMapper);
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
