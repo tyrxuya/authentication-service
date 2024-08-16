@@ -9,6 +9,7 @@ import io.vavr.API;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.core.convert.ConversionService;
@@ -67,4 +68,8 @@ public abstract class BaseOperation {
                 .status(status)
                 .build());
     }
+
+    //sql exception za unique constriant
+
+    //feign exception
 }
