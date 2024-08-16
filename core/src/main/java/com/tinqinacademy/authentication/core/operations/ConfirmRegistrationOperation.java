@@ -28,7 +28,10 @@ import static io.vavr.API.Match;
 public class ConfirmRegistrationOperation extends BaseOperation implements ConfirmRegistration {
     private final UserRepository userRepository;
 
-    public ConfirmRegistrationOperation(Validator validator, ConversionService conversionService, ErrorMapper errorMapper, UserRepository userRepository) {
+    public ConfirmRegistrationOperation(Validator validator,
+                                        ConversionService conversionService,
+                                        ErrorMapper errorMapper,
+                                        UserRepository userRepository) {
         super(validator, conversionService, errorMapper);
         this.userRepository = userRepository;
     }
@@ -36,16 +39,19 @@ public class ConfirmRegistrationOperation extends BaseOperation implements Confi
     @Override
     public Either<ErrorOutput, ConfirmRegistrationOutput> process(ConfirmRegistrationInput input) {
         return Try.of(() -> {
+            log.info("Start process method in ConfirmRegistrationOperation. Input: {}", input);
+
             validate(input);
 
-            User user = userRepository.searchDistinctByConfirmationCode(input.getConfirmationCode())
-                    .orElseThrow(InvalidConfirmationCodeException::new);
+            User user = findUserWithConfirmationCode(input);
 
             user.setConfirmationCode(null);
 
             userRepository.save(user);
 
             ConfirmRegistrationOutput result = ConfirmRegistrationOutput.builder().build();
+
+            log.info("End process method in ConfirmRegistrationOperation. Result: {}", result);
 
             return result;
         })
@@ -55,5 +61,10 @@ public class ConfirmRegistrationOperation extends BaseOperation implements Confi
                         validateCase(throwable, HttpStatus.I_AM_A_TEAPOT),
                         defaultCase(throwable, HttpStatus.I_AM_A_TEAPOT)
                 ));
+    }
+
+    private User findUserWithConfirmationCode(ConfirmRegistrationInput input) {
+        return userRepository.searchDistinctByConfirmationCode(input.getConfirmationCode())
+                .orElseThrow(InvalidConfirmationCodeException::new);
     }
 }
