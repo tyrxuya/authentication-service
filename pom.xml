@@ -39,6 +39,7 @@
 		<jwt.version>0.12.6</jwt.version>
 		<dotenv.version>4.0.0</dotenv.version>
 		<startermail.version>3.2.2</startermail.version>
+		<feign-jackson.version>13.3</feign-jackson.version>
 	</properties>
 
 	<dependencies>
