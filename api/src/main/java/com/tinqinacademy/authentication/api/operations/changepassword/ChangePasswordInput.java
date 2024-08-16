@@ -12,10 +12,10 @@ import lombok.*;
 @ToString
 @Builder
 public class ChangePasswordInput implements OperationInput {
-    @NotBlank()
+    @NotBlank
     private String oldPassword;
 
-    @NotBlank()
+    @NotBlank
     private String newPassword;
 
     @Email
