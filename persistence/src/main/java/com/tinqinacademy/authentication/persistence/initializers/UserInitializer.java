@@ -6,6 +6,7 @@ import com.tinqinacademy.authentication.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -14,12 +15,13 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class UserInitializer implements ApplicationRunner {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
         User admin = User.builder()
                 .username("admin")
-                .password("admin")
+                .password(passwordEncoder.encode("admin"))
                 .role(RoleType.ADMIN)
                 .email("hotel@tinqin.com")
                 .firstName("")
