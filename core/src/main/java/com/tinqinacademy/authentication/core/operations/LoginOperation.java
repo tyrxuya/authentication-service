@@ -50,21 +50,13 @@ public class LoginOperation extends BaseOperation implements Login {
         return Try.of(() -> {
             log.info("Start process method in LoginOperation. Input: {}", input);
 
-            User user = userRepository.findByUsername(input.getUsername())
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            User user = findUserWithUsernameIfExists(input);
 
-            if (!passwordEncoder.matches(input.getPassword(), user.getPassword())) {
-                throw new BadCredentialsException("Wrong password");
-            }
+            checkIfCredentialsMatch(input, user);
 
-            if (Objects.nonNull(user.getConfirmationCode())) {
-                throw new UserNotConfirmedException();
-            }
+            checkIfUserIsConfirmed(user);
 
-            String token = jwtService.generateToken(Map.of(
-                    "userId", user.getId().toString(),
-                    "authorities", user.getRole().toString()
-            ));
+            String token = generateJwtToken(user);
 
             LoginOutput result = LoginOutput.builder()
                     .token(token)
@@ -82,5 +74,29 @@ public class LoginOperation extends BaseOperation implements Login {
                         customCase(throwable, HttpStatus.UNAUTHORIZED, UserNotConfirmedException.class),
                         defaultCase(throwable, HttpStatus.I_AM_A_TEAPOT)
                 ));
+    }
+
+    private String generateJwtToken(User user) {
+        return jwtService.generateToken(Map.of(
+                "userId", user.getId().toString(),
+                "authorities", user.getRole().toString()
+        ));
+    }
+
+    private void checkIfUserIsConfirmed(User user) {
+        if (Objects.nonNull(user.getConfirmationCode())) {
+            throw new UserNotConfirmedException();
+        }
+    }
+
+    private void checkIfCredentialsMatch(LoginInput input, User user) {
+        if (!passwordEncoder.matches(input.getPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Wrong password");
+        }
+    }
+
+    private User findUserWithUsernameIfExists(LoginInput input) {
+        return userRepository.findByUsername(input.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }
