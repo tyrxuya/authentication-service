@@ -43,14 +43,9 @@ public class DemoteOperation extends BaseOperation implements Demote {
 
             validate(input);
 
-            User user = userRepository.findById(UUID.fromString(input.getUserId()))
-                    .orElseThrow(UserNotFoundException::new);
+            User user = findUserById(input);
 
-            Integer adminCount = userRepository.findUsersByRole(RoleType.ADMIN).size();
-
-            if (adminCount <= 1) {
-                throw new InvalidDemoteException();
-            }
+            checkIfDemoteIsPossible();
 
             user.setRole(RoleType.USER);
 
@@ -69,5 +64,20 @@ public class DemoteOperation extends BaseOperation implements Demote {
                         customCase(throwable, HttpStatus.FORBIDDEN, InvalidDemoteException.class),
                         defaultCase(throwable, HttpStatus.I_AM_A_TEAPOT)
                 ));
+    }
+
+    private void checkIfDemoteIsPossible() {
+        if (getAdminCount() <= 1) {
+            throw new InvalidDemoteException();
+        }
+    }
+
+    private Integer getAdminCount() {
+        return userRepository.findUsersByRole(RoleType.ADMIN).size();
+    }
+
+    private User findUserById(DemoteInput input) {
+        return userRepository.findById(UUID.fromString(input.getUserId()))
+                .orElseThrow(UserNotFoundException::new);
     }
 }
