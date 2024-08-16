@@ -1,4 +1,4 @@
-package com.tinqinacademy.authentication.api.operations.validateuser;
+package com.tinqinacademy.authentication.api.operations.validate;
 
 import com.tinqinacademy.authentication.api.base.OperationInput;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,7 @@ import lombok.*;
 @Setter
 @ToString
 @Builder
-public class ValidateUserInput implements OperationInput {
+public class ValidateInput implements OperationInput {
     @NotBlank
     private String token;
 

@@ -1,4 +1,4 @@
-package com.tinqinacademy.authentication.api.operations.validateuser;
+package com.tinqinacademy.authentication.api.operations.validate;
 
 import com.tinqinacademy.authentication.api.base.OperationOutput;
 import lombok.*;
@@ -9,6 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @ToString
-public class ValidateUserOutput implements OperationOutput {
+public class ValidateOutput implements OperationOutput {
     private boolean isValid;
 }
