@@ -1,8 +1,10 @@
 package com.tinqinacademy.authentication.core.security;
 
+import com.tinqinacademy.authentication.persistence.repositories.BlacklistedTokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,12 +20,15 @@ import java.util.Date;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
     @Value("${jwt.secret}")
     private String SECRET_KEY;
 
     @Value("${jwt.expiration}")
     private Long JWT_EXPIRATION;
+
+    private final BlacklistedTokenRepository blacklistedTokenRepository;
 
     public Long getExpiration() {
         return JWT_EXPIRATION;
@@ -49,7 +54,8 @@ public class JwtService {
     }
 
     public boolean isValid(String token) {
-        return getExpiration(token).after(Date.from(Instant.now()));
+        return getExpiration(token).after(Date.from(Instant.now())) &&
+                blacklistedTokenRepository.findById(token).isPresent();
     }
 
     public Claims parseToken(String token) {
