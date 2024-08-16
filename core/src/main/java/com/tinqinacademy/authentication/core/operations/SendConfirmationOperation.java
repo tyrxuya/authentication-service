@@ -8,6 +8,7 @@ import com.tinqinacademy.authentication.api.operations.sendconfirmation.SendConf
 import io.vavr.API;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,10 @@ public class SendConfirmationOperation extends BaseOperation implements SendConf
     @Override
     public Either<ErrorOutput, SendConfirmationOutput> process(SendConfirmationInput input) {
         return Try.of(() -> {
+            log.info("Start process method in SendConfirmationOperation. Input: {}", input);
+
+            validate(input);
+
             Context context = new Context(Locale.ENGLISH, Map.of("email", input.getRecipient(),
                     "confirmationCode", input.getConfirmationCode())
             );
@@ -52,13 +57,13 @@ public class SendConfirmationOperation extends BaseOperation implements SendConf
 
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, "utf-8");
 
-            mimeMessageHelper.setTo(input.getRecipient());
-            mimeMessageHelper.setFrom(sender);
-            mimeMessageHelper.setSubject("Registration Confirmation");
-            mimeMessageHelper.setText(templateEngine.process("confirmation", context), true);
+            setupMimeMessageHelper(input, mimeMessageHelper, context);
+
             mailSender.send(mimeMessage);
 
             SendConfirmationOutput result = SendConfirmationOutput.builder().build();
+
+            log.info("End process method in SendConfirmationOperation. Result: {}", result);
 
             return result;
         })
@@ -66,5 +71,12 @@ public class SendConfirmationOperation extends BaseOperation implements SendConf
                 .mapLeft(throwable -> Match(throwable).of(
                         defaultCase(throwable, HttpStatus.I_AM_A_TEAPOT)
                 ));
+    }
+
+    private void setupMimeMessageHelper(SendConfirmationInput input, MimeMessageHelper mimeMessageHelper, Context context) throws MessagingException {
+        mimeMessageHelper.setTo(input.getRecipient());
+        mimeMessageHelper.setFrom(sender);
+        mimeMessageHelper.setSubject("Registration Confirmation");
+        mimeMessageHelper.setText(templateEngine.process("confirmation", context), true);
     }
 }
