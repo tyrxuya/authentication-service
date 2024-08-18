@@ -30,10 +30,6 @@ public class JwtService {
 
     private final BlacklistedTokenRepository blacklistedTokenRepository;
 
-    public Long getExpiration() {
-        return JWT_EXPIRATION;
-    }
-
     public String generateToken(Map<String, String> claims) {
         Date now = Date.from(Instant.now());
 
@@ -77,7 +73,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
     }
 
-    private Date getExpiration(String token) {
+    public Date getExpiration(String token) {
         Claims claims = parseToken(token);
         return claims.getExpiration();
     }
