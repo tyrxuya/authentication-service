@@ -1,5 +1,6 @@
 package com.tinqinacademy.authentication.core.operations;
 
+import com.tinqinacacdemy.email.restexport.EmailClient;
 import com.tinqinacademy.authentication.api.errors.ErrorMapper;
 import com.tinqinacademy.authentication.api.errors.ErrorOutput;
 import com.tinqinacademy.authentication.api.exceptions.UserNotFoundException;
@@ -8,52 +9,36 @@ import com.tinqinacademy.authentication.api.operations.recoverpassword.RecoverPa
 import com.tinqinacademy.authentication.api.operations.recoverpassword.RecoverPasswordOutput;
 import com.tinqinacademy.authentication.persistence.entities.User;
 import com.tinqinacademy.authentication.persistence.repositories.UserRepository;
-import io.vavr.API;
+import com.tinqinacademy.email.api.operations.recovery.RecoveryInput;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-
-import java.util.Locale;
-import java.util.Map;
 
 import static io.vavr.API.Match;
 
 @Service
 @Slf4j
 public class RecoverPasswordOperation extends BaseOperation implements RecoverPassword {
-    private final JavaMailSender mailSender;
-    private final TemplateEngine templateEngine;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    @Value("${sender.email}")
-    private String sender;
+    private final EmailClient emailClient;
 
     public RecoverPasswordOperation(Validator validator,
                                     ConversionService conversionService,
                                     ErrorMapper errorMapper,
-                                    JavaMailSender mailSender,
-                                    TemplateEngine templateEngine,
                                     UserRepository userRepository,
-                                    PasswordEncoder passwordEncoder) {
+                                    PasswordEncoder passwordEncoder,
+                                    EmailClient emailClient) {
         super(validator, conversionService, errorMapper);
-        this.mailSender = mailSender;
-        this.templateEngine = templateEngine;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailClient = emailClient;
     }
 
     @Override
@@ -65,23 +50,13 @@ public class RecoverPasswordOperation extends BaseOperation implements RecoverPa
 
             User user = findUserByEmail(input);
 
-            String newPassword = RandomStringUtils.randomAlphanumeric(16);
+            RecoveryInput recoveryInput = conversionService.convert(user, RecoveryInput.class);
 
-            user.setPassword(passwordEncoder.encode(newPassword));
+            user.setPassword(passwordEncoder.encode(recoveryInput.getNewPassword()));
 
             userRepository.save(user);
 
-            Context context = new Context(Locale.ENGLISH, Map.of("username", user.getUsername(),
-                    "password", newPassword)
-            );
-
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, "utf-8");
-
-            setupMimeMessageHelper(user, mimeMessageHelper, context);
-
-            mailSender.send(mimeMessage);
+            emailClient.sendRecovery(recoveryInput);
 
             RecoverPasswordOutput result = RecoverPasswordOutput.builder().build();
 
@@ -95,13 +70,6 @@ public class RecoverPasswordOperation extends BaseOperation implements RecoverPa
                         customCase(throwable, HttpStatus.UNAUTHORIZED, UserNotFoundException.class),
                         defaultCase(throwable, HttpStatus.I_AM_A_TEAPOT)
                 ));
-    }
-
-    private void setupMimeMessageHelper(User user, MimeMessageHelper mimeMessageHelper, Context context) throws MessagingException {
-        mimeMessageHelper.setTo(user.getEmail());
-        mimeMessageHelper.setFrom(sender);
-        mimeMessageHelper.setSubject("Requested password change");
-        mimeMessageHelper.setText(templateEngine.process("recovery", context), true);
     }
 
     private User findUserByEmail(RecoverPasswordInput input) {

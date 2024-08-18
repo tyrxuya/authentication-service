@@ -1,15 +1,15 @@
 package com.tinqinacademy.authentication.core.operations;
 
+import com.tinqinacacdemy.email.restexport.EmailClient;
 import com.tinqinacademy.authentication.api.errors.ErrorMapper;
 import com.tinqinacademy.authentication.api.errors.ErrorOutput;
 import com.tinqinacademy.authentication.api.exceptions.EmailNotFoundException;
 import com.tinqinacademy.authentication.api.operations.register.Register;
 import com.tinqinacademy.authentication.api.operations.register.RegisterInput;
 import com.tinqinacademy.authentication.api.operations.register.RegisterOutput;
-import com.tinqinacademy.authentication.api.operations.sendconfirmation.SendConfirmation;
-import com.tinqinacademy.authentication.api.operations.sendconfirmation.SendConfirmationInput;
 import com.tinqinacademy.authentication.persistence.entities.User;
 import com.tinqinacademy.authentication.persistence.repositories.UserRepository;
+import com.tinqinacademy.email.api.operations.confirmation.ConfirmationInput;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import jakarta.validation.Validator;
@@ -18,7 +18,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import static io.vavr.API.Match;
@@ -27,16 +26,16 @@ import static io.vavr.API.Match;
 @Slf4j
 public class RegisterOperation extends BaseOperation implements Register {
     private final UserRepository userRepository;
-    private final SendConfirmation sendConfirmation;
+    private final EmailClient emailClient;
 
     public RegisterOperation(Validator validator,
                              ConversionService conversionService,
                              ErrorMapper errorMapper,
                              UserRepository userRepository,
-                             SendConfirmation sendConfirmation) {
+                             EmailClient emailClient) {
         super(validator, conversionService, errorMapper);
         this.userRepository = userRepository;
-        this.sendConfirmation = sendConfirmation;
+        this.emailClient = emailClient;
     }
 
     @Override
@@ -54,12 +53,9 @@ public class RegisterOperation extends BaseOperation implements Register {
 
             userRepository.save(user);
 
-            SendConfirmationInput sendConfirmationInput = SendConfirmationInput.builder()
-                    .recipient(user.getEmail())
-                    .confirmationCode(confirmationCode)
-                    .build();
+            ConfirmationInput confirmationInput = conversionService.convert(user, ConfirmationInput.class);
 
-            sendConfirmation.process(sendConfirmationInput);
+            emailClient.sendConfirmation(confirmationInput);
 
             RegisterOutput result = RegisterOutput.builder()
                     .id(user.getId().toString())
