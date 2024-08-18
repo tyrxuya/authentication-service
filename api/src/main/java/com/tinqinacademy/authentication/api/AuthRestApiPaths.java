@@ -1,7 +1,8 @@
 package com.tinqinacademy.authentication.api;
 
 public final class AuthRestApiPaths {
-    private static final String AUTH = "/auth";
+    private static final String BASE = "api/v1";
+    private static final String AUTH = BASE + "/auth";
 
     public static final String REGISTER = AUTH + "/register";
     public static final String LOGIN = AUTH + "/login";

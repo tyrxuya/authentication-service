@@ -15,7 +15,7 @@ import java.util.List;
 public class BlacklistedTokenScheduler {
     private final BlacklistedTokenRepository blacklistedTokenRepository;
 
-    @Scheduled(cron = "0 0-23/4 * * *")
+    @Scheduled(cron = "* 0 0-23/4 * * *")
     public void deleteExpiredTokens() {
         Date now = Date.from(Instant.now());
 
