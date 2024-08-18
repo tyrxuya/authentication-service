@@ -14,9 +14,6 @@ import com.tinqinacademy.authentication.api.operations.demote.DemoteOutput;
 import com.tinqinacademy.authentication.api.operations.login.Login;
 import com.tinqinacademy.authentication.api.operations.login.LoginInput;
 import com.tinqinacademy.authentication.api.operations.login.LoginOutput;
-import com.tinqinacademy.authentication.api.operations.logout.Logout;
-import com.tinqinacademy.authentication.api.operations.logout.LogoutInput;
-import com.tinqinacademy.authentication.api.operations.logout.LogoutOutput;
 import com.tinqinacademy.authentication.api.operations.promote.Promote;
 import com.tinqinacademy.authentication.api.operations.promote.PromoteInput;
 import com.tinqinacademy.authentication.api.operations.promote.PromoteOutput;
@@ -51,7 +48,6 @@ public class AuthController extends BaseController {
     private final ChangePassword changePassword;
     private final RecoverPassword recoverPassword;
     private final Validate validate;
-    private final Logout logout;
 
     @PostMapping(AuthRestApiPaths.REGISTER)
     public ResponseEntity<?> register(@RequestBody RegisterInput input) {
@@ -112,13 +108,6 @@ public class AuthController extends BaseController {
     @PostMapping(AuthRestApiPaths.VALIDATE)
     public ResponseEntity<?> validate(@RequestBody ValidateInput input) {
         Either<ErrorOutput, ValidateOutput> result = validate.process(input);
-
-        return getOutput(result, HttpStatus.OK);
-    }
-
-    @PostMapping(AuthRestApiPaths.LOGOUT)
-    public ResponseEntity<?> logout(@RequestBody LogoutInput input) {
-        Either<ErrorOutput, LogoutOutput> result = logout.process(input);
 
         return getOutput(result, HttpStatus.OK);
     }
