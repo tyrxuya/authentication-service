@@ -10,4 +10,18 @@
         <version>${revision}</version>
     </parent>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.tinqinacademy.email</groupId>
+            <artifactId>restexport</artifactId>
+            <version>${email.revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-jackson</artifactId>
+            <version>${feign-jackson.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>
