@@ -5,10 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Getter
 @Setter
@@ -47,7 +44,9 @@ public class User {
     @Column(nullable = false)
     private String phoneNumber;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private RoleType role = RoleType.USER;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id") )
+    private Set<Role> roles;
 }

@@ -1,5 +1,6 @@
 package com.tinqinacademy.authentication.persistence.entities;
 
+import com.tinqinacademy.authentication.persistence.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,5 +20,6 @@ public class Role {
     private UUID id;
 
     @Column(nullable = false, unique = true)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private RoleType roleType;
 }
