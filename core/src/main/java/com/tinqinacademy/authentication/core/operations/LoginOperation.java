@@ -9,7 +9,6 @@ import com.tinqinacademy.authentication.api.operations.login.LoginOutput;
 import com.tinqinacademy.authentication.core.security.JwtService;
 import com.tinqinacademy.authentication.persistence.entities.User;
 import com.tinqinacademy.authentication.persistence.repositories.UserRepository;
-import io.vavr.API;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import jakarta.validation.Validator;
@@ -50,13 +49,17 @@ public class LoginOperation extends BaseOperation implements Login {
         return Try.of(() -> {
             log.info("Start process method in LoginOperation. Input: {}", input);
 
+            validate(input);
+
             User user = findUserWithUsernameIfExists(input);
+            log.info("User found: {}", user);
 
             checkIfCredentialsMatch(input, user);
 
             checkIfUserIsConfirmed(user);
 
             String token = generateJwtToken(user);
+            log.info("Token generated: {}", token);
 
             LoginOutput result = LoginOutput.builder()
                     .token(token)
@@ -79,20 +82,24 @@ public class LoginOperation extends BaseOperation implements Login {
     private String generateJwtToken(User user) {
         return jwtService.generateToken(Map.of(
                 "userId", user.getId().toString(),
-                "authorities", user.getRole().toString()
+                "username", user.getUsername()
         ));
     }
 
     private void checkIfUserIsConfirmed(User user) {
+        log.info("Start checkIfUserIsConfirmed");
         if (Objects.nonNull(user.getConfirmationCode())) {
             throw new UserNotConfirmedException();
         }
+        log.info("End checkIfUserIsConfirmed. User is confirmed");
     }
 
     private void checkIfCredentialsMatch(LoginInput input, User user) {
+        log.info("Start checkIfCredentialsMatch");
         if (!passwordEncoder.matches(input.getPassword(), user.getPassword())) {
             throw new BadCredentialsException("Wrong password");
         }
+        log.info("End checkIfCredentialsMatch. Credentials match");
     }
 
     private User findUserWithUsernameIfExists(LoginInput input) {
