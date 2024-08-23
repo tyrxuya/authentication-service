@@ -10,15 +10,15 @@ public enum RoleType {
     ADMIN("ROLE_ADMIN"),
     UNKNOWN("");
 
-    private final String role;
+    private final String type;
 
-    RoleType(String role) {
-        this.role = role;
+    RoleType(String type) {
+        this.type = type;
     }
 
-    public static RoleType fromRole(String role) {
+    public static RoleType fromType(String type) {
         return Arrays.stream(RoleType.values())
-                .filter(roleType -> roleType.role.equals(role))
+                .filter(roleType -> roleType.type.equals(type))
                 .findFirst()
                 .orElse(UNKNOWN);
     }

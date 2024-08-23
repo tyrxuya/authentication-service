@@ -1,4 +1,4 @@
-package com.tinqinacademy.authentication.api;
+package com.tinqinacademy.authentication.api.paths;
 
 public final class AuthFeignClientApiPaths {
     private static final String POST = "POST";

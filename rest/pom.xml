@@ -33,6 +33,12 @@
             <artifactId>spring-boot-admin-starter-client</artifactId>
             <version>${sbadmin.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <version>${feign.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

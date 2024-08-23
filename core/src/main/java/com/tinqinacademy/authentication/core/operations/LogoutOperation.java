@@ -11,6 +11,7 @@ import com.tinqinacademy.authentication.persistence.repositories.BlacklistedToke
 import io.vavr.API;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
@@ -23,13 +24,19 @@ import static io.vavr.API.Match;
 @Slf4j
 public class LogoutOperation extends BaseOperation implements Logout {
     private final BlacklistedTokenRepository blacklistedTokenRepository;
+    private final HttpServletRequest request;
+    private final JwtService jwtService;
 
     public LogoutOperation(Validator validator,
                            ConversionService conversionService,
                            ErrorMapper errorMapper,
-                           BlacklistedTokenRepository blacklistedTokenRepository) {
+                           BlacklistedTokenRepository blacklistedTokenRepository,
+                           HttpServletRequest request,
+                           JwtService jwtService) {
         super(validator, conversionService, errorMapper);
         this.blacklistedTokenRepository = blacklistedTokenRepository;
+        this.request = request;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -39,9 +46,17 @@ public class LogoutOperation extends BaseOperation implements Logout {
 
             validate(input);
 
-            BlacklistedToken token = conversionService.convert(input, BlacklistedToken.class);
+            String token = extractTokenFromRequest(request);
+            log.info("Extracted token from request: {}", token);
 
-            blacklistedTokenRepository.save(token);
+            BlacklistedToken blacklistedToken = BlacklistedToken.builder()
+                    .token(token)
+                    .expiration(jwtService.getExpiration(token))
+                    .build();
+            log.info("Token to blacklist: {}", blacklistedToken);
+
+            blacklistedTokenRepository.save(blacklistedToken);
+            log.info("Token saved in repository. To be deleted by cron job");
 
             LogoutOutput result = LogoutOutput.builder().build();
 
@@ -54,5 +69,9 @@ public class LogoutOperation extends BaseOperation implements Logout {
                         validateCase(throwable, HttpStatus.BAD_REQUEST),
                         defaultCase(throwable, HttpStatus.I_AM_A_TEAPOT)
                 ));
+    }
+
+    private String extractTokenFromRequest(HttpServletRequest request) {
+        return (String)request.getAttribute("token");
     }
 }
