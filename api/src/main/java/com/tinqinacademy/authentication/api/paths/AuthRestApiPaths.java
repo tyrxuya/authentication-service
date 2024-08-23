@@ -1,7 +1,7 @@
-package com.tinqinacademy.authentication.api;
+package com.tinqinacademy.authentication.api.paths;
 
 public final class AuthRestApiPaths {
-    private static final String BASE = "api/v1";
+    private static final String BASE = "/api/v1";
     private static final String AUTH = BASE + "/auth";
 
     public static final String REGISTER = AUTH + "/register";
