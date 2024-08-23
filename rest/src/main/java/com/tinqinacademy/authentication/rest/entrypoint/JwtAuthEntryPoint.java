@@ -1,4 +1,4 @@
-package com.tinqinacademy.authentication.rest;
+package com.tinqinacademy.authentication.rest.entrypoint;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

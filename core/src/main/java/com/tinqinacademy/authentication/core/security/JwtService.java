@@ -1,6 +1,9 @@
 package com.tinqinacademy.authentication.core.security;
 
+import com.tinqinacademy.authentication.api.exceptions.UserNotFoundException;
+import com.tinqinacademy.authentication.persistence.entities.User;
 import com.tinqinacademy.authentication.persistence.repositories.BlacklistedTokenRepository;
+import com.tinqinacademy.authentication.persistence.repositories.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -8,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -40,8 +44,6 @@ public class JwtService {
         );
 
         return Jwts.builder()
-//                .claim("userId", "")
-//                .claim("authorities", "")
                 .claims(claims)
                 .issuedAt(now)
                 .expiration(expiration)
@@ -51,7 +53,7 @@ public class JwtService {
 
     public boolean isValid(String token) {
         return getExpiration(token).after(Date.from(Instant.now())) &&
-                blacklistedTokenRepository.findById(token).isPresent();
+                blacklistedTokenRepository.findById(token).isEmpty();
     }
 
     public Claims parseToken(String token) {
@@ -62,19 +64,26 @@ public class JwtService {
                 .getPayload();
     }
 
-    public Authentication getAuthentication(String token) {
+    public String getUserId(String token) {
         Claims claims = parseToken(token);
-        String username = claims.getSubject();
+        String userId = claims.get("userId").toString();
 
-        return new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
-    }
-
-    private SecretKey key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
+        return userId;
     }
 
     public Date getExpiration(String token) {
         Claims claims = parseToken(token);
+
         return claims.getExpiration();
+    }
+
+    public String getUsername(String token) {
+        Claims claims = parseToken(token);
+
+        return claims.get("username").toString();
+    }
+
+    private SecretKey key() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
     }
 }
