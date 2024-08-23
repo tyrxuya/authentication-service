@@ -44,10 +44,13 @@ public class ConfirmRegistrationOperation extends BaseOperation implements Confi
             validate(input);
 
             User user = findUserWithConfirmationCode(input);
+            log.info("Found user matching the confirmation code: {}", user);
 
             user.setConfirmationCode(null);
+            log.info("User confirmed successfully");
 
             userRepository.save(user);
+            log.info("User saved in repository");
 
             ConfirmRegistrationOutput result = ConfirmRegistrationOutput.builder().build();
 

@@ -49,14 +49,19 @@ public class RecoverPasswordOperation extends BaseOperation implements RecoverPa
             validate(input);
 
             User user = findUserByEmail(input);
+            log.info("User found: {}", user);
 
             RecoveryInput recoveryInput = conversionService.convert(user, RecoveryInput.class);
+            log.info("RecoveryInput for email client: {}", recoveryInput);
 
             user.setPassword(passwordEncoder.encode(recoveryInput.getNewPassword()));
+            log.info("New password successfully set");
 
             userRepository.save(user);
+            log.info("User saved in repository");
 
             emailClient.sendRecovery(recoveryInput);
+            log.info("Recovery email sent");
 
             RecoverPasswordOutput result = RecoverPasswordOutput.builder().build();
 

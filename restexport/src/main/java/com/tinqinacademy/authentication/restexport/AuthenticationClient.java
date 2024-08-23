@@ -1,6 +1,6 @@
 package com.tinqinacademy.authentication.restexport;
 
-import com.tinqinacademy.authentication.api.AuthFeignClientApiPaths;
+import com.tinqinacademy.authentication.api.paths.AuthFeignClientApiPaths;
 import com.tinqinacademy.authentication.api.operations.validate.ValidateInput;
 import com.tinqinacademy.authentication.api.operations.validate.ValidateOutput;
 import feign.Headers;

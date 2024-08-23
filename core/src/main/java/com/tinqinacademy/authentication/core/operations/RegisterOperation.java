@@ -48,14 +48,19 @@ public class RegisterOperation extends BaseOperation implements Register {
             User user = conversionService.convert(input, User.class);
 
             String confirmationCode = RandomStringUtils.randomAlphanumeric(12);
+            log.info("Generated confirmation code: {}", confirmationCode);
 
             user.setConfirmationCode(confirmationCode);
+            log.info("Registered user: {}", user);
 
             userRepository.save(user);
+            log.info("Saved user in repository");
 
             ConfirmationInput confirmationInput = conversionService.convert(user, ConfirmationInput.class);
+            log.info("ConfirmationInput for email client: {}", confirmationInput);
 
             emailClient.sendConfirmation(confirmationInput);
+            log.info("Email successfully sent");
 
             RegisterOutput result = RegisterOutput.builder()
                     .id(user.getId().toString())
