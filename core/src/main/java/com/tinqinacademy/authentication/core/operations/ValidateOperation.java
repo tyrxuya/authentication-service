@@ -36,7 +36,7 @@ public class ValidateOperation extends BaseOperation implements Validate {
 
             validate(input);
 
-            boolean isValid = jwtService.isValid(input.getToken()) && usernamesMatch(input);
+            boolean isValid = jwtService.isValid(input.getToken());
 
             ValidateOutput result = ValidateOutput.builder()
                     .isValid(isValid)
@@ -48,12 +48,7 @@ public class ValidateOperation extends BaseOperation implements Validate {
         })
                 .toEither()
                 .mapLeft(throwable -> Match(throwable).of(
-                        validateCase(throwable, HttpStatus.I_AM_A_TEAPOT),
-                        defaultCase(throwable, HttpStatus.I_AM_A_TEAPOT)
+                        validateCase(throwable, HttpStatus.BAD_REQUEST)
                 ));
-    }
-
-    private boolean usernamesMatch(ValidateInput input) {
-        return jwtService.getUsername(input.getToken()).equals(input.getUsername());
     }
 }
