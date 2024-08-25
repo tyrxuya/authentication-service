@@ -1,5 +1,11 @@
 package com.tinqinacademy.authentication.rest.controllers;
 
+import com.tinqinacademy.authentication.api.operations.getuser.GetUser;
+import com.tinqinacademy.authentication.api.operations.getuser.GetUserInput;
+import com.tinqinacademy.authentication.api.operations.getuser.GetUserOutput;
+import com.tinqinacademy.authentication.api.operations.getuserdetails.GetUserDetails;
+import com.tinqinacademy.authentication.api.operations.getuserdetails.GetUserDetailsInput;
+import com.tinqinacademy.authentication.api.operations.getuserdetails.GetUserDetailsOutput;
 import com.tinqinacademy.authentication.api.paths.AuthRestApiPaths;
 import com.tinqinacademy.authentication.api.errors.ErrorOutput;
 import com.tinqinacademy.authentication.api.operations.changepassword.ChangePassword;
@@ -40,6 +46,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,6 +64,8 @@ public class AuthController extends BaseController {
     private final RecoverPassword recoverPassword;
     private final Validate validate;
     private final Logout logout;
+    private final GetUserDetails getUserDetails;
+    private final GetUser getUser;
 
     @PostMapping(AuthRestApiPaths.REGISTER)
     @Operation(
@@ -216,6 +225,20 @@ public class AuthController extends BaseController {
     })
     public ResponseEntity<?> logout(@RequestBody LogoutInput input) {
         Either<ErrorOutput, LogoutOutput> result = logout.process(input);
+
+        return handleOperationResult(result, HttpStatus.OK);
+    }
+
+    @PostMapping(AuthRestApiPaths.GET_USER_DETAILS)
+    public ResponseEntity<?> getUserDetails(@RequestBody GetUserDetailsInput input) {
+        Either<ErrorOutput, GetUserDetailsOutput> result = getUserDetails.process(input);
+
+        return handleOperationResult(result, HttpStatus.OK);
+    }
+
+    @PostMapping(AuthRestApiPaths.GET_USER)
+    public ResponseEntity<?> getUser(@RequestBody GetUserInput input) {
+        Either<ErrorOutput, GetUserOutput> result = getUser.process(input);
 
         return handleOperationResult(result, HttpStatus.OK);
     }
