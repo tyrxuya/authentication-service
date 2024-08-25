@@ -61,8 +61,7 @@ public class ConfirmRegistrationOperation extends BaseOperation implements Confi
                 .toEither()
                 .mapLeft(throwable -> Match(throwable).of(
                         customCase(throwable, HttpStatus.BAD_REQUEST, InvalidConfirmationCodeException.class),
-                        validateCase(throwable, HttpStatus.I_AM_A_TEAPOT),
-                        defaultCase(throwable, HttpStatus.I_AM_A_TEAPOT)
+                        validateCase(throwable, HttpStatus.BAD_REQUEST)
                 ));
     }
 

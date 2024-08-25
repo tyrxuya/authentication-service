@@ -66,8 +66,7 @@ public class LogoutOperation extends BaseOperation implements Logout {
         })
                 .toEither()
                 .mapLeft(throwable -> Match(throwable).of(
-                        validateCase(throwable, HttpStatus.BAD_REQUEST),
-                        defaultCase(throwable, HttpStatus.I_AM_A_TEAPOT)
+                        validateCase(throwable, HttpStatus.BAD_REQUEST)
                 ));
     }
 

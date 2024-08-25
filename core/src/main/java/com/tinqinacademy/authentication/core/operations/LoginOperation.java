@@ -71,11 +71,10 @@ public class LoginOperation extends BaseOperation implements Login {
         })
                 .toEither()
                 .mapLeft(throwable -> Match(throwable).of(
-                        validateCase(throwable, HttpStatus.I_AM_A_TEAPOT),
+                        validateCase(throwable, HttpStatus.BAD_REQUEST),
                         customCase(throwable, HttpStatus.NOT_FOUND, UsernameNotFoundException.class),
                         customCase(throwable, HttpStatus.UNAUTHORIZED, BadCredentialsException.class),
-                        customCase(throwable, HttpStatus.UNAUTHORIZED, UserNotConfirmedException.class),
-                        defaultCase(throwable, HttpStatus.I_AM_A_TEAPOT)
+                        customCase(throwable, HttpStatus.UNAUTHORIZED, UserNotConfirmedException.class)
                 ));
     }
 

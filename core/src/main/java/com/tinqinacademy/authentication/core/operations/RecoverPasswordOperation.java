@@ -71,9 +71,8 @@ public class RecoverPasswordOperation extends BaseOperation implements RecoverPa
         })
                 .toEither()
                 .mapLeft(throwable -> Match(throwable).of(
-                        validateCase(throwable, HttpStatus.I_AM_A_TEAPOT),
-                        customCase(throwable, HttpStatus.UNAUTHORIZED, UserNotFoundException.class),
-                        defaultCase(throwable, HttpStatus.I_AM_A_TEAPOT)
+                        validateCase(throwable, HttpStatus.BAD_REQUEST),
+                        customCase(throwable, HttpStatus.UNAUTHORIZED, UserNotFoundException.class)
                 ));
     }
 

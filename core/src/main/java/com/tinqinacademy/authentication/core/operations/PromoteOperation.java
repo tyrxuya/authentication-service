@@ -79,23 +79,13 @@ public class PromoteOperation extends BaseOperation implements Promote {
         })
                 .toEither()
                 .mapLeft(throwable -> Match(throwable).of(
-                        validateCase(throwable, HttpStatus.I_AM_A_TEAPOT),
-                        customCase(throwable, HttpStatus.UNAUTHORIZED, UserNotFoundException.class),
-                        defaultCase(throwable, HttpStatus.I_AM_A_TEAPOT)
+                        validateCase(throwable, HttpStatus.BAD_REQUEST),
+                        customCase(throwable, HttpStatus.UNAUTHORIZED, UserNotFoundException.class)
                 ));
     }
 
     private User getUserFromInput(PromoteInput input) {
         return userRepository.findById(UUID.fromString(input.getUserId()))
-                .orElseThrow(UserNotFoundException::new);
-    }
-
-    private String extractTokenFromRequest(HttpServletRequest request) {
-        return (String)request.getAttribute("token");
-    }
-
-    private User getUserFromToken(String token) {
-        return userRepository.findById(UUID.fromString(jwtService.getUserId(token)))
                 .orElseThrow(UserNotFoundException::new);
     }
 

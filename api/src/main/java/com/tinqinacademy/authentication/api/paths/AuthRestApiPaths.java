@@ -13,4 +13,6 @@ public final class AuthRestApiPaths {
     public static final String PROMOTE = AUTH + "/promote";
     public static final String DEMOTE = AUTH + "/demote";
     public static final String VALIDATE = AUTH + "/validate";
+    public static final String GET_USER_DETAILS = AUTH + "/user-details";
+    public static final String GET_USER = AUTH + "/user";
 }
