@@ -13,7 +13,4 @@ import lombok.*;
 public class ValidateInput implements OperationInput {
     @NotBlank
     private String token;
-
-    @NotBlank
-    private String username;
 }
