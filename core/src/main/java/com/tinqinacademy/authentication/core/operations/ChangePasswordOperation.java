@@ -84,8 +84,7 @@ public class ChangePasswordOperation extends BaseOperation implements ChangePass
                 .mapLeft(throwable -> Match(throwable).of(
                         validateCase(throwable, HttpStatus.I_AM_A_TEAPOT),
                         customCase(throwable, HttpStatus.UNAUTHORIZED, UserNotFoundException.class),
-                        customCase(throwable, HttpStatus.UNAUTHORIZED, BadCredentialsException.class),
-                        defaultCase(throwable, HttpStatus.I_AM_A_TEAPOT)
+                        customCase(throwable, HttpStatus.UNAUTHORIZED, BadCredentialsException.class)
                 ));
     }
 
